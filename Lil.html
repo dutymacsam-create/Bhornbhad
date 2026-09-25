@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Get To Know Bhornbhad</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+
+    body {
+      background: linear-gradient(135deg, #1f1c2c, #928dab);
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 20px;
+      color: #333;
+    }
+
+    .card-container {
+      background: #ffffff;
+      width: 100%;
+      max-width: 500px;
+      border-radius: 20px;
+      padding: 30px;
+      box-shadow: 0 15px 35px rgba(0, 0, 0, 0.3);
+      text-align: center;
+      position: relative;
+    }
+
+    .header {
+      margin-bottom: 25px;
+    }
+
+    .header h1 {
+      font-size: 24px;
+      color: #4a3f6b;
+    }
+
+    .header p {
+      font-size: 14px;
+      color: #777;
+      margin-top: 5px;
+    }
+
+    .progress-bar-container {
+      width: 100%;
+      background-color: #eee;
+      border-radius: 10px;
+      height: 8px;
+      margin-bottom: 25px;
+      overflow: hidden;
+    }
+
+    .progress-bar {
+      height: 100%;
+      width: 0%;
+      background: linear-gradient(90deg, #6a11cb, #2575fc);
+      transition: width 0.3s ease;
+    }
+
+    .question-box {
+      min-height: 140px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .question-box h2 {
+      font-size: 20px;
+      color: #2c3e50;
+      margin-bottom: 15px;
+    }
+
+    textarea {
+      width: 100%;
+      height: 80px;
+      border: 2px solid #e0e0e0;
+      border-radius: 10px;
+      padding: 10px;
+      font-size: 14px;
+      resize: none;
+      outline: none;
+      transition: border-color 0.3s;
+    }
+
+    textarea:focus {
+      border-color: #6a11cb;
+    }
+
+    .buttons {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 25px;
+      gap: 10px;
+    }
+
+    button {
+      flex: 1;
+      padding: 12px;
+      border: none;
+      border-radius: 10px;
+      font-size: 16px;
+      font-weight: bold;
+      cursor: pointer;
+      transition: transform 0.2s, background-color 0.2s;
+    }
+
+    button:active {
+      transform: scale(0.98);
+    }
+
+    .btn-next {
+      background: linear-gradient(90deg, #6a11cb, #2575fc);
+      color: white;
+    }
+
+    .btn-prev {
+      background: #e0e0e0;
+      color: #555;
+    }
+
+    .hidden {
+      display: none;
+    }
+
+    .thank-you {
+      font-size: 22px;
+      color: #2c3e50;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="card-container">
+    <div class="header">
+      <h1>Hey Lawrencia! 👋</h1>
+      <p>A few fun questions to get to know you better, Bhornbhad ✨</p>
+    </div>
+
+    <div class="progress-bar-container">
+      <div class="progress-bar" id="progress"></div>
+    </div>
+
+    <div id="quiz-body">
+      <div class="question-box">
+        <h2 id="question-text">Question goes here...</h2>
+        <textarea id="answer-input" placeholder="Type your answer here..."></textarea>
+      </div>
+
+      <div class="buttons">
+        <button class="btn-prev" id="prev-btn" onclick="prevQuestion()" disabled>Back</button>
+        <button class="btn-next" id="next-btn" onclick="nextQuestion()">Next ✨</button>
+      </div>
+    </div>
+
+    <div id="thank-you-screen" class="hidden">
+      <div class="thank-you">
+        🎉 Thank you, Bhornbhad!
+      </div>
+      <p style="margin-top: 15px; color: #666;" id="status-message">
+        Sending your responses...
+      </p>
+    </div>
+  </div>
+
+  <script>
+    // Your personal Formspree endpoint link:
+    const FORMSPREE_ENDPOINT = "https://formspree.io/f/mzezazaa";
+
+    const questions = [
+      "Where did you grow up, and what was your favorite part about it?",
+      "What's your go-to comfort food or favorite spot to eat?",
+      "How do you usually like to relax or recharge after a long week?",
+      "If you could travel anywhere in the world tomorrow, where would you go?",
+      "What’s a hobby or topic you could talk about for hours without getting bored?",
+      "Are you more of a spontaneous person or do you like to plan everything out?",
+      "What’s the best thing that happened to you this week?"
+    ];
+
+    let currentQuestion = 0;
+    const userAnswers = {};
+
+    function updateCard() {
+      document.getElementById('question-text').innerText = questions[currentQuestion];
+      document.getElementById('answer-input').value = userAnswers[currentQuestion] || "";
+
+      const progressPercent = ((currentQuestion + 1) / questions.length) * 100;
+      document.getElementById('progress').style.width = progressPercent + '%';
+
+      document.getElementById('prev-btn').disabled = currentQuestion === 0;
+
+      if (currentQuestion === questions.length - 1) {
+        document.getElementById('next-btn').innerText = "Submit 🎉";
+      } else {
+        document.getElementById('next-btn').innerText = "Next ✨";
+      }
+    }
+
+    function saveCurrentAnswer() {
+      const val = document.getElementById('answer-input').value.trim();
+      userAnswers[currentQuestion] = val;
+    }
+
+    function nextQuestion() {
+      saveCurrentAnswer();
+
+      if (currentQuestion < questions.length - 1) {
+        currentQuestion++;
+        updateCard();
+      } else {
+        submitAnswers();
+      }
+    }
+
+    function prevQuestion() {
+      saveCurrentAnswer();
+      if (currentQuestion > 0) {
+        currentQuestion--;
+        updateCard();
+      }
+    }
+
+    function submitAnswers() {
+      document.getElementById('quiz-body').classList.add('hidden');
+      document.getElementById('thank-you-screen').classList.remove('hidden');
+      document.getElementById('progress').style.width = '100%';
+
+      const payload = {};
+      questions.forEach((q, index) => {
+        payload[`Question ${index + 1}: ${q}`] = userAnswers[index] || "No answer";
+      });
+
+      fetch(FORMSPREE_ENDPOINT, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json'
+        },
+        body: JSON.stringify(payload)
+      })
+      .then(response => {
+        document.getElementById('status-message').innerText = 
+          "Thanks for sharing! Looking forward to chatting more soon 😊";
+      })
+      .catch(error => {
+        document.getElementById('status-message').innerText = 
+          "Thanks for sharing! Looking forward to chatting more soon 😊";
+      });
+    }
+
+    // Initialize first question
+    updateCard();
+  </script>
+
+</body>
+</html>
